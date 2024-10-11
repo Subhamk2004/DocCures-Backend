@@ -4,6 +4,7 @@ import sessionDatabseHandler from './utils/sessionDatabaseHandler.mjs';
 import loginRouter from './routes/admin/adminLogin.mjs';
 import logoutRouter from './routes/admin/adminLogout.mjs';
 import doctorRouter from './routes/admin/doctor.mjs';
+import userRouter from './routes/user/userRoute.mjs'
 
 let app = express();
 
@@ -26,4 +27,4 @@ app.use(sessionDatabseHandler);
 app.use(loginRouter);
 app.use(logoutRouter);
 app.use(doctorRouter);
-
+app.use(userRouter)

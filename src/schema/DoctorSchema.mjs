@@ -43,6 +43,10 @@ let DoctorSchema = mongoose.Schema({
         type: mongoose.Schema.Types.Boolean,
         required: true
     },
+    fees:{
+        type: mongoose.Schema.Types.Number,
+        required: true
+    }
 })
 
 export default mongoose.model('Doctor', DoctorSchema);

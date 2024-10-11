@@ -3,6 +3,9 @@ import DoctorSchema from '../../schema/DoctorSchema.mjs';
 import cloudinary from 'cloudinary';
 import multer from 'multer';
 import dotenv from 'dotenv';
+import { DoctorValidationSchema } from '../../utils/DoctorValidationSchema.mjs';
+import { checkSchema, validationResult, matchedData } from 'express-validator';
+import { hashPassword } from '../../utils/passwordEncrypt.mjs';
 
 dotenv.config();
 
@@ -17,32 +20,48 @@ const router = Router();
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/admin/doctor/add', upload.single('image'), async (req, res) => {
-    try {
+router.post('/admin/doctor/add',
+    upload.single('image'),
+    async (req, res, next) => {
         const doctor = req.body;
-
+        
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path);
             doctor.image = result.secure_url;
         }
+        next()
+    },
+    checkSchema(DoctorValidationSchema),
+    async (req, res) => {
 
-        const newDoctor = new DoctorSchema(doctor);
-        const savedDoctor = await newDoctor.save();
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(200).json({
+                message: errors.message,
+                isSaved: false
+            });
+        }
 
-        console.log(savedDoctor);
-        return res.status(201).json({
-            message: 'Doctor added successfully',
-            isSaved: true,
-            doctor: newDoctor
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(200).json({
-            message: error.message,
-            isSaved: false
-        });
-    }
-});
+        let validatedData = matchedData(req)
+        validatedData.password = hashPassword(validatedData.password)
+        const newDoctor = new DoctorSchema(validatedData);
+
+        try {
+            const savedDoctor = await newDoctor.save();
+
+            return res.status(201).json({
+                message: 'Doctor added successfully',
+                isSaved: true,
+                doctor: newDoctor
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(200).json({
+                message: error.message,
+                isSaved: false
+            });
+        }
+    });
 
 router.get('/admin/doctor/allDoctors',
     async (req, res) => {
@@ -53,8 +72,8 @@ router.get('/admin/doctor/allDoctors',
                 doctorsFound: true
             });
         } catch (error) {
-            console.error('Failed to fetch food items:', error);
-            res.status(200).json({ 
+            console.error('Failed to fetch doctors:', error);
+            res.status(200).json({
                 message: `Can't fetch Doctors, try again later`,
                 doctorsFound: false
             });
