@@ -31,7 +31,7 @@ let DoctorSchema = mongoose.Schema({
         type: mongoose.Schema.Types.String,
         required: true
     },
-    experience:{
+    xp:{
         type: mongoose.Schema.Types.Number,
         required: true
     },
