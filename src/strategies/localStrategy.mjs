@@ -28,19 +28,24 @@ passport.deserializeUser(async (email, done) => {
 
 export default passport.use(
     new Strategy({
-        usernameField: "email",
-        passwordField: "password"
+      usernameField: "email",
+      passwordField: "password"
     }, async (email, password, done) => {
-        try {
-            console.log("Inside passport login");
-
-            let findUser = await User.findOne({ email });
-            if (!findUser) throw new Error("User not foud please signup");
-            if (!comparePassword(password, findUser.password)) throw new Error("Bad credentials");
-            done(null, findUser);
-        } catch (error) {
-            done(`Sorry something went wrong ${error}`, null);
-
+      try {
+        console.log("Inside passport login");
+        const findUser = await User.findOne({ email });
+        
+        if (!findUser) {
+          return done(null, false, { message: "User not found, please signup" });
         }
+        
+        if (!comparePassword(password, findUser.password)) {
+          return done(null, false, { message: "Bad credentials" });
+        }
+        
+        return done(null, findUser);
+      } catch (error) {
+        return done(error);
+      }
     })
-) 
+  );

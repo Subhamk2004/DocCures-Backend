@@ -38,8 +38,10 @@ router.post('/user/signup',
 
         let errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log(errors.errors[0].msg);
+            
             return res.status(200).json({
-                message: errors.message,
+                message: errors.errors[0].msg,
                 isSaved: false
             });
         }
@@ -84,22 +86,42 @@ router.get('/user/allUsers',
         }
     })
 
-router.post('/loginuser', passport.authenticate("local"), (req, res) => {
-    console.log('Entered login endpoint');
-
-    console.log(req.session.passport.user);
-    req.session.isAuthenticated = true;
-    req.session.email = req.user.email;
-    console.log(req.session);
-
-
-    req.session.save((err) => {
+router.post('/loginuser', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
         if (err) {
-            return res.status(500).json({ message: 'Could not save session' });
+            return res.status(500).json({ message: "An unexpected error occurred" });
         }
-        res.json({ user: req.user });
-    });
-})
+        if (!user) {
+            return res.status(401).json({
+                message: info.message,
+                auth: false
+            });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: "An unexpected error occurred" });
+            }
+
+            console.log('Entered login endpoint');
+            req.session.isAuthenticated = true;
+            req.session.email = user.email;
+            console.log(req.session);
+
+            req.session.save((err) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Could not save session' });
+                }
+                return res.status(200).json({
+                    message: "Login successful",
+                    user: {
+                        email: user.email,
+                    },
+                    auth: true
+                });
+            });
+        });
+    })(req, res, next);
+});
 
 router.get('/user/auth/status', (req, res) => {
     console.log('inside login status');
@@ -112,10 +134,30 @@ router.get('/user/auth/status', (req, res) => {
         let data = req.user;
         console.log("req.user is ", data);
 
-        return res.json({ user: data });
+        return res.json({
+            user: {
+                email: data.email,
+                name: data.name,
+                image: data.image,
+                phone: data.phone,
+                address: data.address
+            },
+            auth: true
+        });
 
     }
-    return res.status(404).send({ message: "User already logged out" });
+    return res.status(200).send({ message: "User already logged out" });
 })
+
+router.post("/logout", (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+  
+    req.logout((err) => {
+      if (err) return res.sendStatus(400);
+      req.cookies.isAuthenticated = false;
+      req.cookies.useremail = "";
+      res.status(200).send("User logged out successfully");
+    });
+  });
 
 export default router
