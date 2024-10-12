@@ -6,19 +6,16 @@ import { comparePassword } from "../utils/passwordEncrypt.mjs";
 
 passport.serializeUser((user, done) => {
     console.log('INside serializer');
-    console.log(user.email);
     done(null, user.email);
 })
 
 passport.deserializeUser(async (email, done) => {
     console.log('Inside deserialization');
 
-    console.log(email);
     try {
         let findUser = await User.findOne({ email });
-        console.log(findUser);
 
-        if (!findUser) throw new Error('User not found');
+        if (!findUser) return done(null, false, { message: "User not found, please signup" });
         done(null, findUser);
     } catch (error) {
         done(error, null);
