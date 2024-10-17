@@ -37,10 +37,12 @@ router.get('/user/allUsers',
 
 router.get('/user/auth/status', (req, res) => {
     console.log('inside login status');
+    // console.log( req.session.user);
 
-    if (req.user) {
-        let data = req.user;
-
+    if (req.session.user) {
+        console.log('really exist');
+        
+        let data = req.session.user;
         return res.json({
             user: {
                 email: data.email,
@@ -51,10 +53,8 @@ router.get('/user/auth/status', (req, res) => {
             },
             auth: true
         });
-
     }
-    return res.status(200).send({ message: "User already logged out" });
-})
-
+    return res.status(200).json({ message: "User not authenticated", auth: false });
+});
 
 export default router

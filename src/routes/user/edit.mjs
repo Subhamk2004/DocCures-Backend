@@ -80,12 +80,12 @@ router.put('/user/update',
                 });
             }
             else {
+                console.log(req.session, 'inside logs');
+                
                 req.session.email = updatedUser.email;
-                req.session.passport.user = updatedUser.email;
-                req.user = updatedUser;
-                console.log(req.session.passport.user, 'inside logs');
+                req.session.user = updatedUser;
+                console.log(req.session.user, 'inside logs');
                 console.log(req.session.email, 'inside logs');
-                console.log(req.user, 'inside logs');
                 
                 
                 return res.status(200).json({

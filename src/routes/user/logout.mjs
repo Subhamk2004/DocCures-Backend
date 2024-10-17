@@ -1,18 +1,16 @@
 import { Router } from "express";
-import '../../strategies/localStrategy.mjs';
 
 const router = Router();
 
-
 router.post("/logout", (req, res) => {
-    if (!req.user) return res.sendStatus(401);
-  
-    req.logout((err) => {
-      if (err) return res.sendStatus(400);
-      req.cookies.isAuthenticated = false;
-      req.cookies.useremail = "";
-      res.status(200).send("User logged out successfully");
-    });
-  });
+  if (!req.session.user) {
+    return res.status(401).json({ message: "No authenticated session found" });
+  }
 
-export default router
+  else {
+    req.session.user = null;
+    res.status(200).json({ message: "User logged out successfully" });
+  }
+});
+
+export default router;

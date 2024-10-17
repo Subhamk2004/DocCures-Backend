@@ -1,61 +1,42 @@
-import express from "express";
+import express from 'express';
 import session from 'express-session';
-import mongoose from "mongoose";
-import Mongostore from "connect-mongo";
-import cookieParser from "cookie-parser";
-import passport from "passport";
-import dotenv from "dotenv";
+import MongoStore from 'connect-mongo';
+import { userPassport, doctorPassport } from './passportconfig.mjs';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-const mongoURI = process.env.DATABASE_URI;
+const sessionDatabaseHandler = (app) => {
+  // MongoDB connection
+  mongoose.connect(process.env.DATABASE_URI, {})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
-let router = express();
+  // Session middleware
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DATABASE_URI,
+      collectionName: 'sessions'
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000 * 7 // 1 week
+    }
+  }));
 
-const mongoOptions = {
-    retryWrites: true,
-    w: "majority",
-    tls: true,
-    tlsInsecure: false,
-  };
+  // Initialize Passport for users and doctors
+  app.use(userPassport.initialize());
+  app.use(userPassport.session());
+  app.use(doctorPassport.initialize());
+  app.use(doctorPassport.session());
 
-const mongoConnect = () => {
-    mongoose.connect(mongoURI, mongoOptions)
-        .then((data) => {
-            console.log('Database connected');
-        })
-        .catch((err) => {
-            console.log('Failed to connect');
-        })
-}
+  app.get('/', (req, res) => {
+    res.send('DocCures server is running');
+  });
+};
 
-mongoConnect();
-
-router.use(express.json());
-
-router.use(cookieParser('CookieSecret'));
-router.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        saveUninitialized: false,
-        resave: false,
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24,
-            httpOnly: true,
-        },
-        store: Mongostore.create({
-            client: mongoose.connection.getClient(),
-        })
-    })
-)
-
-router.use(passport.initialize());
-router.use(passport.session());
-
-router.get('/', (req, res) => {
-    req.session.visited = true;
-    console.log(req.session);
-    res.send('DocCures Server is running').status(200);
-})
-
-export default router;
+export default sessionDatabaseHandler;

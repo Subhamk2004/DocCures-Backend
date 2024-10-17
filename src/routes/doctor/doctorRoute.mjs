@@ -3,7 +3,7 @@ import DoctorSchema from "../../schema/DoctorSchema.mjs";
 import cloudinary from 'cloudinary';
 import multer from "multer";
 import dotenv from 'dotenv'
-import '../../strategies/localStrategy.mjs';
+import '../../strategies/docLocalStrategies.mjs';
 
 dotenv.config();
 
@@ -36,22 +36,17 @@ router.get('/doctor/allDoctors',
 
 
 router.get('/doctor/auth/status', (req, res) => {
-    console.log('inside login status');
-
-    if (req.user) {
-        let data = req.user;
+    console.log('inside login status doctor');
+    console.log(req.session);
+    
+    if (req.session.doctor) {
+        console.log(req.session.doctor);
+        let data = req.session.doctor;
 
         return res.json({
-            user: {
-                email: data.email,
-                name: data.name,
-                image: data.image,
-                phone: data.phone,
-                address: data.address
-            },
+            doctor: data,
             auth: true
         });
-
     }
     return res.status(200).send({ message: "User already logged out" });
 })
