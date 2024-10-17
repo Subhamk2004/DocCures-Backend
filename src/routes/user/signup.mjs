@@ -54,7 +54,7 @@ router.post('/user/signup',
             const savedUser = await newUser.save();
 
             return res.status(201).json({
-                message: 'Used registered successfully',
+                message: 'User registered successfully',
                 isSaved: true,
                 user: savedUser
             });

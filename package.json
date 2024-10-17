@@ -11,6 +11,7 @@
   "author": "SKR_1978",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.3",
     "connect-mongo": "^5.1.0",
