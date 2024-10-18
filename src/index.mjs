@@ -57,11 +57,13 @@ sessionDatabaseHandler(app);
 
 const io = new SocketIOServer(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app/', 'https://doc-cures-user.vercel.app/'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'https://doc-cures-user.vercel.app', 'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app/'], // Allowed URLs
     methods: ["GET", "POST"],
-    credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization'], // Add this to allow specific headers
+    credentials: true // Ensure credentials (cookies) are sent
   }
 });
+
 
 // Apply all your existing routes
 app.use(loginRouter);
