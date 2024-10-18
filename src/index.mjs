@@ -46,11 +46,13 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Apply session and passport initialization
