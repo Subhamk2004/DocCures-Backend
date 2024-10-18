@@ -8,8 +8,16 @@ import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
+const mongoOptions = {
+  retryWrites: true,
+  w: "majority",
+  tls: true,
+  tlsInsecure: false,
+  // tlsAllowInvalidCertificates: true
+};
+
 const sessionDatabaseHandler = (app) => {
-  mongoose.connect(process.env.DATABASE_URI, {})
+  mongoose.connect(process.env.DATABASE_URI, mongoOptions)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 

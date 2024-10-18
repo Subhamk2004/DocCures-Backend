@@ -29,6 +29,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 // Update this with your actual frontend URL
@@ -43,18 +44,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Enable pre-flight requests for all routes
 app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
-// Logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
-// Apply session and passport initialization
 sessionDatabaseHandler(app);
 
 const io = new SocketIOServer(server, {

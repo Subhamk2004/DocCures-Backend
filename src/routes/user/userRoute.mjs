@@ -40,6 +40,8 @@ router.get('/user/auth/status', (req, res) => {
     console.log( req.session.user);
     console.log(req.user);
     console.log(req.session);
+    console.log(req.cookies);
+    
     
     if (req.session.user) {
         console.log('really exist');
