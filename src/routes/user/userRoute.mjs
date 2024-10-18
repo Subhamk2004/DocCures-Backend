@@ -49,7 +49,8 @@ router.get('/user/auth/status', (req, res) => {
                 name: data.name,
                 image: data.image,
                 phone: data.phone,
-                address: data.address
+                address: data.address,
+                id: data._id
             },
             auth: true
         });

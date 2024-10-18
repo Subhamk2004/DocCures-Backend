@@ -27,11 +27,11 @@ let DoctorSchema = mongoose.Schema({
         type: mongoose.Schema.Types.String,
         required: true
     },
-    degree:{
+    degree: {
         type: mongoose.Schema.Types.String,
         required: true
     },
-    xp:{
+    xp: {
         type: mongoose.Schema.Types.Number,
         required: true
     },
@@ -43,9 +43,13 @@ let DoctorSchema = mongoose.Schema({
         type: mongoose.Schema.Types.Boolean,
         required: true
     },
-    fees:{
+    fees: {
         type: mongoose.Schema.Types.Number,
         required: true
+    },
+    availableForEmergency: {
+        type: Boolean,
+        default: true
     }
 })
 
