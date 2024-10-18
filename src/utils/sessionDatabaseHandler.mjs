@@ -31,7 +31,7 @@ const sessionDatabaseHandler = (app) => {
         maxAge: 1000 * 60 * 60 * 24 * 7,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        sameSite: 'none'
       },
       store: MongoStore.create({
         client: mongoose.connection.getClient(),
