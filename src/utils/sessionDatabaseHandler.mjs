@@ -8,12 +8,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const sessionDatabaseHandler = (app) => {
-  // MongoDB connection
   mongoose.connect(process.env.DATABASE_URI, {})
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-  // Session middleware
   app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -23,13 +21,12 @@ const sessionDatabaseHandler = (app) => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Important for cross-site cookies
+      secure: true, // Always use secure cookies in production
+      sameSite: 'none', // Required for cross-site cookie
       maxAge: 24 * 60 * 60 * 1000 * 7 // 1 week
     }
   }));
 
-  // Initialize Passport for users and doctors
   app.use(userPassport.initialize());
   app.use(userPassport.session());
   app.use(doctorPassport.initialize());
