@@ -38,9 +38,16 @@ const io = new SocketIOServer(server, {
 });
 
 const corsOptions = {
-  origin: ['http://localhost:5175', 'http://localhost:5174', 'http://localhost:5173'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: 'GET,POST,PUT,DELETE'
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
@@ -89,11 +96,11 @@ io.on('connection', (socket) => {
       if (availableDoctors.length > 0) {
         socket.emit('emergencyDoctorsList', availableDoctors);
         console.log('Emergency doctors found:', availableDoctors);
-        
+
       }
       else {
         socket.emit('emergencyDoctorsList', {
-          message:'No doctors available for emergency'
+          message: 'No doctors available for emergency'
         });
         console.log('No doctors available for emergency');
       }
