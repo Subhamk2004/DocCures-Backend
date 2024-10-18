@@ -35,7 +35,7 @@ const server = http.createServer(app);
 const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 const corsOptions = {
-  origin: frontendURL,
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -59,7 +59,7 @@ sessionDatabaseHandler(app);
 
 const io = new SocketIOServer(server, {
   cors: {
-    origin: frontendURL,
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
     methods: ["GET", "POST"],
     credentials: true
   }

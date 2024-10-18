@@ -4,6 +4,7 @@ import MongoStore from 'connect-mongo';
 import { userPassport, doctorPassport } from './passportconfig.mjs';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -12,25 +13,33 @@ const sessionDatabaseHandler = (app) => {
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-  app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DATABASE_URI,
-      collectionName: 'sessions'
-    }),
-    cookie: {
-      secure: true, // Always use secure cookies in production
-      sameSite: 'none', // Required for cross-site cookie
-      maxAge: 24 * 60 * 60 * 1000 * 7 // 1 week
-    }
-  }));
+  app.use(cookieParser('CookieSecret'));
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // true in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      },
+      store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+      }),
+    }));
 
   app.use(userPassport.initialize());
   app.use(userPassport.session());
   app.use(doctorPassport.initialize());
   app.use(doctorPassport.session());
+
+  app.get('/', (req, res) => {
+    console.log(req.session);
+    req.session.visited = true;
+    res.status(200).send('Hello from the home route!');
+  })
 };
 
 export default sessionDatabaseHandler;

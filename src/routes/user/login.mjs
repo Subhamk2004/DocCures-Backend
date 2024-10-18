@@ -24,9 +24,13 @@ router.post('/loginuser', (req, res, next) => {
       console.log('User logged in successfully');
       console.log(req.user);
       req.session.isAuthenticated = true;
-      req.session.email = user.email;
+      req.session.email = req.user.email;
       req.session.userType = 'user';
       req.session.user = req.user;
+      // res.session.cookies = req.cookies;
+      console.log(req.cookies);
+      
+      
       req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);
