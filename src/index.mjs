@@ -36,7 +36,7 @@ const server = http.createServer(app);
 const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
