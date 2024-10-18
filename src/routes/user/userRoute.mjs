@@ -39,6 +39,7 @@ router.get('/user/auth/status', (req, res) => {
     console.log('inside login status');
     console.log( req.session.user);
     console.log(req.user);
+    console.log(req.session);
     
     if (req.session.user) {
         console.log('really exist');
@@ -52,10 +53,10 @@ router.get('/user/auth/status', (req, res) => {
                 phone: data.phone,
                 address: data.address,
                 id: data._id
-            },
+            }, 
             auth: true
         });
-    }
+    } 
     return res.status(200).json({ message: "User not authenticated", auth: false });
 });
 
