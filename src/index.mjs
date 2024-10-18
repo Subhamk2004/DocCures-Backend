@@ -21,42 +21,50 @@ import doctorLogin from './routes/doctor/login.mjs';
 import doctorLogout from './routes/doctor/logout.mjs';
 import doctorUpdate from './routes/doctor/edit.mjs';
 import doctorDelete from './routes/doctor/delete.mjs';
-
-// Import the new emergency feature router
 import emergencyRouter from './routes/emergency/Emergency.mjs';
 import DoctorSchema from './schema/DoctorSchema.mjs';
 import { EmergencyRequest } from './schema/Emergency.mjs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer(server, {
-  cors: {
-    origin: ['http://localhost:5175', 'http://localhost:5174', 'http://localhost:5173'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
-  }
-});
+
+// Update this with your actual frontend URL
+const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  origin: frontendURL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
   optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
+
+// Enable pre-flight requests for all routes
 app.options('*', cors(corsOptions));
+
 app.use(express.json());
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 // Apply session and passport initialization
 sessionDatabaseHandler(app);
+
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: frontendURL,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 
 // Apply all your existing routes
 app.use(loginRouter);
@@ -98,9 +106,7 @@ io.on('connection', (socket) => {
       if (availableDoctors.length > 0) {
         socket.emit('emergencyDoctorsList', availableDoctors);
         console.log('Emergency doctors found:', availableDoctors);
-
-      }
-      else {
+      } else {
         socket.emit('emergencyDoctorsList', {
           message: 'No doctors available for emergency'
         });
@@ -156,6 +162,11 @@ io.on('connection', (socket) => {
   });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

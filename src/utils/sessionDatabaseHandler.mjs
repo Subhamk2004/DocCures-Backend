@@ -23,8 +23,8 @@ const sessionDatabaseHandler = (app) => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Important for cross-site cookies
       maxAge: 24 * 60 * 60 * 1000 * 7 // 1 week
     }
   }));
@@ -34,10 +34,6 @@ const sessionDatabaseHandler = (app) => {
   app.use(userPassport.session());
   app.use(doctorPassport.initialize());
   app.use(doctorPassport.session());
-
-  app.get('/', (req, res) => {
-    res.send('DocCures server is running');
-  });
 };
 
 export default sessionDatabaseHandler;
