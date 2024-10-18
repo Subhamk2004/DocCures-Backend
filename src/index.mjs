@@ -32,11 +32,22 @@ const app = express();
 app.set('trust proxy', 1);
 const server = http.createServer(app);
 
-// Update this with your actual frontend URL
-const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'https://doc-cures-user.vercel.app',
+  'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app'
+];
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app/', 'https://doc-cures-user.vercel.app/'],
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -53,19 +64,15 @@ app.use((req, res, next) => {
   next();
 });
 
-sessionDatabaseHandler(app);
 
 const io = new SocketIOServer(server, {
-  cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'https://doc-cures-user.vercel.app', 'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app/'], // Allowed URLs
-    methods: ["GET", "POST"],
-    allowedHeaders: ['Content-Type', 'Authorization'], // Add this to allow specific headers
-    credentials: true // Ensure credentials (cookies) are sent
-  }
+  cors: corsOptions
 });
 
 
+
 // Apply all your existing routes
+sessionDatabaseHandler(app);
 app.use(loginRouter);
 app.use(logoutRouter);
 app.use(doctorRouter);

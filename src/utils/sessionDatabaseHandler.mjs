@@ -30,8 +30,8 @@ const sessionDatabaseHandler = (app) => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // true in production
-        sameSite: 'none'
+        secure: process.env.NODE_ENV === 'production', // Only use secure in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
       },
       store: MongoStore.create({
         client: mongoose.connection.getClient(),
