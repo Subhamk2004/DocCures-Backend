@@ -37,14 +37,8 @@ const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:5175',
   'https://doc-cures-user.vercel.app',
-  'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app',
   'https://doc-cures-doctor.vercel.app',
-  'https://doc-cures-doctor-h28q04ia7-subham-kumars-projects.vercel.app',
-  'https://doc-cures-doctor-git-main-subham-kumars-projects.vercel.app',
-  'https://doc-cures-admin.vercel.app/',
-  'https://doc-cures-admin-subham-kumars-projects.vercel.app/',
-  'https://doc-cures-admin-git-main-subham-kumars-projects.vercel.app/',
-  'https://doc-cures-admin-rk4ws8gqk-subham-kumars-projects.vercel.app/'
+  'https://doc-cures-admin.vercel.app',
 ];
 
 const corsOptions = {
@@ -73,7 +67,6 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
   next();
 });
-
 
 app.use(express.json());
 
