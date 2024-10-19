@@ -37,7 +37,8 @@ const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:5175',
   'https://doc-cures-user.vercel.app',
-  'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app'
+  'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app',
+  'https://doc-cures-doctor.vercel.app/'
 ];
 
 const corsOptions = {
