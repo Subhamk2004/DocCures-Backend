@@ -38,9 +38,9 @@ const allowedOrigins = [
   'http://localhost:5175',
   'https://doc-cures-user.vercel.app',
   'https://doc-cures-user-5z5zm67h3-subham-kumars-projects.vercel.app',
-  'https://doc-cures-doctor.vercel.app/',
-  'https://doc-cures-doctor-h28q04ia7-subham-kumars-projects.vercel.app/',
-  'https://doc-cures-doctor-git-main-subham-kumars-projects.vercel.app/'
+  'https://doc-cures-doctor.vercel.app',
+  'https://doc-cures-doctor-h28q04ia7-subham-kumars-projects.vercel.app',
+  'https://doc-cures-doctor-git-main-subham-kumars-projects.vercel.app'
 ];
 
 const corsOptions = {
@@ -57,6 +57,18 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 app.options('*', cors(corsOptions));
 
