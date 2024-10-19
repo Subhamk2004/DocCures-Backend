@@ -41,7 +41,10 @@ const allowedOrigins = [
   'https://doc-cures-doctor.vercel.app',
   'https://doc-cures-doctor-h28q04ia7-subham-kumars-projects.vercel.app',
   'https://doc-cures-doctor-git-main-subham-kumars-projects.vercel.app',
-  'https://doc-cures-admin.vercel.app/'
+  'https://doc-cures-admin.vercel.app/',
+  'https://doc-cures-admin-subham-kumars-projects.vercel.app/',
+  'https://doc-cures-admin-git-main-subham-kumars-projects.vercel.app/',
+  'https://doc-cures-admin-rk4ws8gqk-subham-kumars-projects.vercel.app/'
 ];
 
 const corsOptions = {
