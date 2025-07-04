@@ -24,7 +24,8 @@ router.post('/user/signup',
     async (req, res, next) => {
         const user = req.body;
         console.log(user);
-
+        console.log(req.file);
+        
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path);
             user.image = result.secure_url;

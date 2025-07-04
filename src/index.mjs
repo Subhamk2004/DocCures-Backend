@@ -76,6 +76,7 @@ app.use((req, res, next) => {
 });
 
 
+
 const io = new SocketIOServer(server, {
   cors: {
     origin: allowedOrigins,
@@ -110,6 +111,41 @@ app.use(doctorLogout);
 app.use(doctorUpdate);
 app.use(doctorDelete);
 app.use(emergencyRouter);
+
+
+app.get('/ping', (req, res) => {
+    res.status(200).send('Server is alive');
+});
+
+let lastPingTime = Date.now();
+const PING_INTERVAL = 30000; // 30 seconds
+
+const keepAlive = () => {
+    const currentTime = Date.now();
+    console.log(`Last ping was ${(currentTime - lastPingTime) / 1000} seconds ago`);
+
+    fetch('https://doccures-backend.onrender.com/ping', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Server pinged successfully');
+                lastPingTime = currentTime;
+            } else {
+                console.error('Failed to ping server:', response.status);
+            }
+        })
+        .catch(error => {
+            console.error('Error pinging server:', error);
+        });
+};
+
+setInterval(keepAlive, PING_INTERVAL);
+
+
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -192,7 +228,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`DocCures Server is running on port ${PORT}`);
 });
