@@ -54,6 +54,7 @@ const corsOptions = {
   credentials: true,
 };
 
+
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
@@ -113,37 +114,7 @@ app.use(doctorDelete);
 app.use(emergencyRouter);
 
 
-app.get('/ping', (req, res) => {
-    res.status(200).send('Server is alive');
-});
-
-let lastPingTime = Date.now();
-const PING_INTERVAL = 30000; // 30 seconds
-
-const keepAlive = () => {
-    const currentTime = Date.now();
-    console.log(`Last ping was ${(currentTime - lastPingTime) / 1000} seconds ago`);
-
-    fetch('https://doccures-backend.onrender.com/ping', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-            if (response.ok) {
-                console.log('Server pinged successfully');
-                lastPingTime = currentTime;
-            } else {
-                console.error('Failed to ping server:', response.status);
-            }
-        })
-        .catch(error => {
-            console.error('Error pinging server:', error);
-        });
-};
-
-setInterval(keepAlive, PING_INTERVAL);
+// npm run dev
 
 
 
